@@ -31,7 +31,13 @@ func (as *AuthenticationService) UsingGithubToken(githubToken string) (AccessTok
 	var u string = "/auth/github"
 	var b map[string]string = map[string]string{"github_token": githubToken}
 
-	req, err := as.client.NewRequest("POST", u, b, nil)
+	// travis api's auth/github is buggy. it only accepts User-Agent headers starting with 'Travis'.
+	// https://github.com/travis-ci/travis-ci/issues/5649
+	h := map[string]string{
+		"User-Agent": "Travis/go-travis",
+	}
+
+	req, err := as.client.NewRequest("POST", u, b, h)
 	if err != nil {
 		return "", nil, err
 	}
