@@ -96,7 +96,15 @@ func (rs *EnvironmentVariablesService) Get(id string, repositoryId uint) (*Envir
 // environmentVariablePostBody represents the response of a call
 // to the Travis CI get environment variables endpoint.
 type environmentVariablePostBody struct {
-	EnvironmentVariable EnvironmentVariable `json:"env_var"`
+	EnvironmentVariable environmentVariableInPostBody `json:"env_var"`
+}
+
+// environmentVariableInPostBody represents the paramters a Travis CI settings environment variable
+// needs for creating and updating
+type environmentVariableInPostBody struct {
+	Name   string `json:"name"`
+	Value  string `json:"value"`
+	Public bool   `json:"public"`
 }
 
 // Create fetches an environment variable by id provided.
@@ -109,7 +117,9 @@ func (rs *EnvironmentVariablesService) Create(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+
+	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
 
 	req, err := rs.client.NewRequest("POST", u, body, nil)
 	if err != nil {
@@ -136,7 +146,9 @@ func (rs *EnvironmentVariablesService) Update(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+
+	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
 
 	req, err := rs.client.NewRequest("PATCH", u, body, nil)
 	if err != nil {
@@ -152,7 +164,7 @@ func (rs *EnvironmentVariablesService) Update(repositoryId uint, envVar *Environ
 	return &envVarResp.EnvironmentVariable, resp, err
 }
 
-// Update updates an environment variable.
+// Delete deletes an environment variable.
 //
 // Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
 func (rs *EnvironmentVariablesService) Delete(repositoryId uint, envVar *EnvironmentVariable) (*EnvironmentVariable, *http.Response, error) {
@@ -163,7 +175,9 @@ func (rs *EnvironmentVariablesService) Delete(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+
+	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
 
 	req, err := rs.client.NewRequest("DELETE", u, body, nil)
 	if err != nil {
