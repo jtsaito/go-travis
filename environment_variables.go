@@ -62,9 +62,9 @@ type getEnvironmentVariableResponse struct {
 	EnvironmentVariable EnvironmentVariable `json:"env_var"`
 }
 
-// EnvironmentVariablesGetOptions specifies the optional parameters to the
+// EnvironmentVariablesRequestOptions specifies the optional parameters to the
 // EnvironmentVariable.Get method.
-type EnvironmentVariablesGetOptions struct {
+type EnvironmentVariablesRequestOptions struct {
 	// repository ids to fetch environment variables for
 	RepositoryId uint `url:"repository_id,omitempty"`
 }
@@ -73,7 +73,7 @@ type EnvironmentVariablesGetOptions struct {
 //
 // Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
 func (rs *EnvironmentVariablesService) Get(id string, repositoryId uint) (*EnvironmentVariable, *http.Response, error) {
-	opts := EnvironmentVariablesGetOptions{RepositoryId: repositoryId}
+	opts := EnvironmentVariablesRequestOptions{RepositoryId: repositoryId}
 	u, err := urlWithOptions(fmt.Sprintf("/settings/env_vars/%s", id), &opts)
 	if err != nil {
 		return nil, nil, err
@@ -103,7 +103,7 @@ type environmentVariablePostBody struct {
 //
 // Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
 func (rs *EnvironmentVariablesService) Create(repositoryId uint, envVar *EnvironmentVariable) (*EnvironmentVariable, *http.Response, error) {
-	opts := EnvironmentVariablesGetOptions{RepositoryId: repositoryId}
+	opts := EnvironmentVariablesRequestOptions{RepositoryId: repositoryId}
 	u, err := urlWithOptions("/settings/env_vars", &opts)
 	if err != nil {
 		return nil, nil, err
@@ -112,6 +112,60 @@ func (rs *EnvironmentVariablesService) Create(repositoryId uint, envVar *Environ
 	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
 
 	req, err := rs.client.NewRequest("POST", u, body, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var envVarResp getEnvironmentVariableResponse
+	resp, err := rs.client.Do(req, &envVarResp)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &envVarResp.EnvironmentVariable, resp, err
+}
+
+// Update updates an environment variable.
+//
+// Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
+func (rs *EnvironmentVariablesService) Update(repositoryId uint, envVar *EnvironmentVariable) (*EnvironmentVariable, *http.Response, error) {
+	opts := EnvironmentVariablesRequestOptions{RepositoryId: repositoryId}
+	id := envVar.Id
+	u, err := urlWithOptions(fmt.Sprintf("/settings/env_vars/%s", id), &opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+
+	req, err := rs.client.NewRequest("PATCH", u, body, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var envVarResp getEnvironmentVariableResponse
+	resp, err := rs.client.Do(req, &envVarResp)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &envVarResp.EnvironmentVariable, resp, err
+}
+
+// Update updates an environment variable.
+//
+// Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
+func (rs *EnvironmentVariablesService) Delete(repositoryId uint, envVar *EnvironmentVariable) (*EnvironmentVariable, *http.Response, error) {
+	opts := EnvironmentVariablesRequestOptions{RepositoryId: repositoryId}
+	id := envVar.Id
+	u, err := urlWithOptions(fmt.Sprintf("/settings/env_vars/%s", id), &opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+
+	req, err := rs.client.NewRequest("DELETE", u, body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
