@@ -92,3 +92,35 @@ func (rs *EnvironmentVariablesService) Get(id string, repositoryId uint) (*Envir
 
 	return &envVarResp.EnvironmentVariable, resp, err
 }
+
+// environmentVariablePostBody represents the response of a call
+// to the Travis CI get environment variables endpoint.
+type environmentVariablePostBody struct {
+	EnvironmentVariable EnvironmentVariable `json:"env_var"`
+}
+
+// Create fetches an environment variable by id provided.
+//
+// Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
+func (rs *EnvironmentVariablesService) Create(repositoryId uint, envVar *EnvironmentVariable) (*EnvironmentVariable, *http.Response, error) {
+	opts := EnvironmentVariablesGetOptions{RepositoryId: repositoryId}
+	u, err := urlWithOptions("/settings/env_vars", &opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	body := environmentVariablePostBody{EnvironmentVariable: *envVar}
+
+	req, err := rs.client.NewRequest("POST", u, body, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var envVarResp getEnvironmentVariableResponse
+	resp, err := rs.client.Do(req, &envVarResp)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &envVarResp.EnvironmentVariable, resp, err
+}
