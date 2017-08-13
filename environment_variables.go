@@ -1,6 +1,9 @@
 package travis
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // EnvironmentVariablesService handles communication with the builds
 // related methods of the Travis CI API.
@@ -51,4 +54,41 @@ func (rs *EnvironmentVariablesService) List(opt *EnvironmentVariablesListOptions
 	}
 
 	return envVarsResp.EnvironmentVariables, resp, err
+}
+
+// getEnvironmentVariableResponse represents the response of a call
+// to the Travis CI get environment variables endpoint.
+type getEnvironmentVariableResponse struct {
+	EnvironmentVariable EnvironmentVariable `json:"env_var"`
+}
+
+// EnvironmentVariablesGetOptions specifies the optional parameters to the
+// EnvironmentVariable.Get method.
+type EnvironmentVariablesGetOptions struct {
+	// repository ids to fetch environment variables for
+	RepositoryId uint `url:"repository_id,omitempty"`
+}
+
+// Get fetches an environment variable by id provided.
+//
+// Travis CI API docs: https://docs.travis-ci.com/api/?http#settings:-environment-variables
+func (rs *EnvironmentVariablesService) Get(id string, repositoryId uint) (*EnvironmentVariable, *http.Response, error) {
+	opts := EnvironmentVariablesGetOptions{RepositoryId: repositoryId}
+	u, err := urlWithOptions(fmt.Sprintf("/settings/env_vars/%s", id), &opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := rs.client.NewRequest("GET", u, nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var envVarResp getEnvironmentVariableResponse
+	resp, err := rs.client.Do(req, &envVarResp)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &envVarResp.EnvironmentVariable, resp, err
 }
