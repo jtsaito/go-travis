@@ -57,15 +57,16 @@ type Client struct {
 	UserAgent string
 
 	// Services used to manipulate API entities
-	Authentication *AuthenticationService
-	Repositories   *RepositoriesService
-	Builds         *BuildsService
-	Jobs           *JobsService
-	Branches       *BranchesService
-	Logs           *LogsService
-	Commits        *CommitsService
-	Requests       *RequestsService
-	Users          *UsersService
+	Authentication       *AuthenticationService
+	Repositories         *RepositoriesService
+	Builds               *BuildsService
+	Jobs                 *JobsService
+	Branches             *BranchesService
+	Logs                 *LogsService
+	Commits              *CommitsService
+	Requests             *RequestsService
+	Users                *UsersService
+	EnvironmentVariables *EnvironmentVariablesService
 }
 
 // NewClient returns a new Travis API client.
@@ -96,6 +97,7 @@ func NewClient(baseUrl string, travisToken string) *Client {
 	c.Commits = &CommitsService{client: c}
 	c.Requests = &RequestsService{client: c}
 	c.Users = &UsersService{client: c}
+	c.EnvironmentVariables = &EnvironmentVariablesService{client: c}
 
 	if travisToken != "" {
 		c.Authentication.UsingTravisToken(travisToken)
