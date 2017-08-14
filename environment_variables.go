@@ -100,7 +100,7 @@ type environmentVariablePostBody struct {
 }
 
 // environmentVariableInPostBody represents the paramters a Travis CI settings environment variable
-// needs for creating and updating
+// needs for creating and updating.
 type environmentVariableInPostBody struct {
 	Name   string `json:"name"`
 	Value  string `json:"value"`
@@ -117,9 +117,8 @@ func (rs *EnvironmentVariablesService) Create(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
-
-	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
+	envVarBody := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+	body := environmentVariablePostBody{EnvironmentVariable: envVarBody}
 
 	req, err := rs.client.NewRequest("POST", u, body, nil)
 	if err != nil {
@@ -146,9 +145,8 @@ func (rs *EnvironmentVariablesService) Update(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
-
-	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
+	envVarBody := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+	body := environmentVariablePostBody{EnvironmentVariable: envVarBody}
 
 	req, err := rs.client.NewRequest("PATCH", u, body, nil)
 	if err != nil {
@@ -175,9 +173,8 @@ func (rs *EnvironmentVariablesService) Delete(repositoryId uint, envVar *Environ
 		return nil, nil, err
 	}
 
-	envVarX := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
-
-	body := environmentVariablePostBody{EnvironmentVariable: envVarX}
+	envVarBody := environmentVariableInPostBody{Name: envVar.Name, Public: envVar.Public, Value: envVar.Value}
+	body := environmentVariablePostBody{EnvironmentVariable: envVarBody}
 
 	req, err := rs.client.NewRequest("DELETE", u, body, nil)
 	if err != nil {
