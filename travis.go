@@ -67,6 +67,7 @@ type Client struct {
 	Requests             *RequestsService
 	Users                *UsersService
 	EnvironmentVariables *EnvironmentVariablesService
+	Hooks                *HooksService
 }
 
 // NewClient returns a new Travis API client.
@@ -98,6 +99,7 @@ func NewClient(baseUrl string, travisToken string) *Client {
 	c.Requests = &RequestsService{client: c}
 	c.Users = &UsersService{client: c}
 	c.EnvironmentVariables = &EnvironmentVariablesService{client: c}
+	c.Hooks = &HooksService{client: c}
 
 	if travisToken != "" {
 		c.Authentication.UsingTravisToken(travisToken)
