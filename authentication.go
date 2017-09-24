@@ -37,8 +37,6 @@ func (as *AuthenticationService) UsingGithubToken(githubToken string) (AccessTok
 		"User-Agent": "Travis/go-travis",
 	}
 
-	fmt.Println("called jts travis cli\n")
-
 	req, err := as.client.NewRequest("POST", u, b, h)
 	if err != nil {
 		return "", nil, err
